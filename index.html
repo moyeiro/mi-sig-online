@@ -8,7 +8,7 @@
   <style>
     html, body { height: 100vh; margin: 0; padding: 0; }
     #map { height: 100vh; width: 100%; }
-    .info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; border-radius: 5px; }
+    .leaflet-control-layers-toggle { background: #fff; }
   </style>
 </head>
 <body>
@@ -16,14 +16,14 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     var map = L.map('map').setView([37.5, -4.5], 8);
-
-    // Capa base
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
-    });
+    }).addTo(map);
 
-    // Mis centros (GeoJSON local)
     var misCentros;
+    var centrosOficiales;
+
+    // Cargar mis centros
     fetch('./data/ejemplo-centros.geojson')
       .then(response => response.json())
       .then(data => {
@@ -35,32 +35,29 @@
               'Incidencias: ' + feature.properties.incidencias
             );
           }
-        });
-      });
+        }).addTo(map);
+        crearControles(); // Crear controles DESPUÉS de cargar
+      })
+      .catch(error => console.error('Error cargando centros:', error));
 
-    // Capa oficial WMS centros educativos (ejemplo IDEAndalucía)
-    var centrosOficiales = L.tileLayer.wms('https://www.ideandalucia.es/services/wms/capas_edificios', {
-      layers: 'edificios_educativos',
+    // Capa WMS oficial (Valencia como ejemplo fiable)
+    centrosOficiales = L.tileLayer.wms('https://terramapas.icv.gva.es/12_Centros?service=WMS', {
+      layers: 'Centros_docentes',
       format: 'image/png',
       transparent: true,
-      attribution: 'IDEA'
+      attribution: 'GVA Centros'
     });
 
-    // Añadir al mapa
-    osm.addTo(map);
-
-    // Control de capas
-    var baseLayers = { "OSM": osm };
-    var overlayLayers = { 
-      "Mis Centros": misCentros,
-      "Centros Oficiales": centrosOficiales
-    };
-    L.control.layers(baseLayers, overlayLayers).addTo(map);
-
-    // Esperar a que cargue misCentros
-    setTimeout(function() {
-      if (misCentros) map.fitBounds(misCentros.getBounds());
-    }, 1000);
+    function crearControles() {
+      if (misCentros) {
+        var overlayLayers = { 
+          "Mis Centros (3 pts)": misCentros,
+          "Centros Oficiales GVA": centrosOficiales 
+        };
+        L.control.layers(null, overlayLayers).addTo(map);
+        map.fitBounds(misCentros.getBounds().pad(0.1));
+      }
+    }
   </script>
 </body>
 </html>
