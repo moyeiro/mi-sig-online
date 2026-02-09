@@ -5,7 +5,7 @@
   <title>Mi SIG Online</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Leaflet CSS -->
+  <!-- Leaflet CSS - SIN integrity -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
@@ -24,14 +24,12 @@
 
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
+  <!-- Leaflet JS - SIN integrity -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Crear el mapa centrado en Andalucía
     var map = L.map('map').setView([37.5, -4.5], 7);
 
-    // Capa base OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
