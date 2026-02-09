@@ -4,62 +4,63 @@
   <meta charset="utf-8" />
   <title>Mi SIG Online</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Leaflet CSS - SIN integrity -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
   <style>
-    html, body {
-      height: 100vh;
-      margin: 0;
-      padding: 0;
-    }
-    #map {
-      height: 100vh;
-      width: 100%;
-    }
+    html, body { height: 100vh; margin: 0; padding: 0; }
+    #map { height: 100vh; width: 100%; }
+    .info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; border-radius: 5px; }
   </style>
 </head>
 <body>
-
   <div id="map"></div>
-
-  <!-- Leaflet JS - SIN integrity -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script>
-    var map = L.map('map').setView([37.5, -4.5], 7);
+    var map = L.map('map').setView([37.5, -4.5], 8);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Capa base
+    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-  </script>
-</body>
-  <!-- NUEVA CAPA DE CENTROS -->
-  <script>
+    });
+
+    // Mis centros (GeoJSON local)
+    var misCentros;
     fetch('./data/ejemplo-centros.geojson')
       .then(response => response.json())
       .then(data => {
-        var centrosLayer = L.geoJSON(data, {
+        misCentros = L.geoJSON(data, {
           onEachFeature: function(feature, layer) {
             layer.bindPopup(
               '<b>' + feature.properties.nombre + '</b><br>' +
               'Tipo: ' + feature.properties.tipo + '<br>' +
               'Incidencias: ' + feature.properties.incidencias
             );
-            layer.setIcon(L.icon({
-              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-              shadowSize: [41, 41]
-            }));
           }
-        }).addTo(map);
-        map.fitBounds(centrosLayer.getBounds());
+        });
       });
+
+    // Capa oficial WMS centros educativos (ejemplo IDEAndalucía)
+    var centrosOficiales = L.tileLayer.wms('https://www.ideandalucia.es/services/wms/capas_edificios', {
+      layers: 'edificios_educativos',
+      format: 'image/png',
+      transparent: true,
+      attribution: 'IDEA'
+    });
+
+    // Añadir al mapa
+    osm.addTo(map);
+
+    // Control de capas
+    var baseLayers = { "OSM": osm };
+    var overlayLayers = { 
+      "Mis Centros": misCentros,
+      "Centros Oficiales": centrosOficiales
+    };
+    L.control.layers(baseLayers, overlayLayers).addTo(map);
+
+    // Esperar a que cargue misCentros
+    setTimeout(function() {
+      if (misCentros) map.fitBounds(misCentros.getBounds());
+    }, 1000);
   </script>
 </body>
-</html>
 </html>
