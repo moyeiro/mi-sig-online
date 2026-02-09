@@ -35,4 +35,31 @@
     }).addTo(map);
   </script>
 </body>
+  <!-- NUEVA CAPA DE CENTROS -->
+  <script>
+    fetch('./data/ejemplo-centros.geojson')
+      .then(response => response.json())
+      .then(data => {
+        var centrosLayer = L.geoJSON(data, {
+          onEachFeature: function(feature, layer) {
+            layer.bindPopup(
+              '<b>' + feature.properties.nombre + '</b><br>' +
+              'Tipo: ' + feature.properties.tipo + '<br>' +
+              'Incidencias: ' + feature.properties.incidencias
+            );
+            layer.setIcon(L.icon({
+              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            }));
+          }
+        }).addTo(map);
+        map.fitBounds(centrosLayer.getBounds());
+      });
+  </script>
+</body>
+</html>
 </html>
