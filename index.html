@@ -6,22 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
     html, body {
-      height: 100%;
+      height: 100vh;
       margin: 0;
       padding: 0;
     }
     #map {
+      height: 100vh;
       width: 100%;
-      height: 100%;
     }
   </style>
 </head>
@@ -30,19 +25,14 @@
   <div id="map"></div>
 
   <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIJ5H1A7CqJ1bL1rj7sPnv7Qf3QtErI="
-    crossorigin=""
-  ></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Crear el mapa centrado aproximadamente en Andalucía
+    // Crear el mapa centrado en Andalucía
     var map = L.map('map').setView([37.5, -4.5], 7);
 
-    // Capa base de OpenStreetMap
+    // Capa base OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
   </script>
